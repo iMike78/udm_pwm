@@ -8,7 +8,9 @@ This repository is structured for HACS as a custom integration. If you prefer a 
 
 ## Current status
 
-This integration has been tested on a UDM-Pro. It may also work on other UDM variants and UniFi switches that expose compatible Linux `hwmon` fan and temperature paths over SSH, but those devices may need different path settings.
+This integration has been tested on a UDM-Pro. It may also work on other UDM variants that expose compatible Linux `hwmon` fan and temperature paths over SSH, but those devices may need different path settings.
+
+UniFi switches are not currently supported. A USW-Pro-24-PoE-EU-US running firmware `7.4.1` was checked and did not expose the `/sys/class/hwmon/hwmon0/device/` path used by this integration.
 
 The integration supports three control modes:
 
@@ -102,7 +104,7 @@ SSH access and the SSH password are configured in the UniFi OS console settings 
 
 ## Finding device paths over SSH
 
-Different UniFi devices and firmware versions may expose fan and temperature files under different `hwmon` paths. SSH into the device and list the available sensors:
+Different UDM variants and firmware versions may expose fan and temperature files under different `hwmon` paths. SSH into the device and list the available sensors:
 
 ```sh
 ls /sys/class/hwmon/hwmon0/device/
