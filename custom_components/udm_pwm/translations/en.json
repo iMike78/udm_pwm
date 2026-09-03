@@ -1,0 +1,137 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "This UDM Pro is already configured."
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the UDM Pro over SSH."
+    },
+    "step": {
+      "user": {
+        "title": "UDM Pro Fan Control",
+        "description": "Connect to the UDM Pro over SSH. Nothing is installed on the UDM Pro.",
+        "data": {
+          "host": "Host",
+          "username": "Username",
+          "password": "Password",
+          "control_mode": "Control mode",
+          "pwm1": "Target PWM 1",
+          "pwm2": "Target PWM 2",
+          "interval": "Polling interval",
+          "smart_interval": "SMART polling interval",
+          "curve_min_temp": "Curve minimum temperature",
+          "curve_max_temp": "Curve maximum temperature",
+          "curve_hysteresis": "Curve hysteresis",
+          "curve_min_pwm": "Curve minimum PWM",
+          "curve_max_pwm": "Curve maximum PWM",
+          "pwm1_path": "PWM 1 sysfs path",
+          "pwm2_path": "PWM 2 sysfs path",
+          "fan1_rpm_path": "Fan 1 RPM sysfs path",
+          "fan2_rpm_path": "Fan 2 RPM sysfs path",
+          "temp1_path": "Temperature 1 sysfs path",
+          "temp2_path": "Temperature 2 sysfs path",
+          "temp3_path": "Temperature 3 sysfs path",
+          "hdd_device": "SMART disk device"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "UDM Pro Fan Control options",
+        "data": {
+          "pwm1": "Target PWM 1",
+          "pwm2": "Target PWM 2",
+          "interval": "Polling interval",
+          "smart_interval": "SMART polling interval",
+          "curve_min_temp": "Curve minimum temperature",
+          "curve_max_temp": "Curve maximum temperature",
+          "curve_hysteresis": "Curve hysteresis",
+          "curve_min_pwm": "Curve minimum PWM",
+          "curve_max_pwm": "Curve maximum PWM",
+          "pwm1_path": "PWM 1 sysfs path",
+          "pwm2_path": "PWM 2 sysfs path",
+          "fan1_rpm_path": "Fan 1 RPM sysfs path",
+          "fan2_rpm_path": "Fan 2 RPM sysfs path",
+          "temp1_path": "Temperature 1 sysfs path",
+          "temp2_path": "Temperature 2 sysfs path",
+          "temp3_path": "Temperature 3 sysfs path",
+          "hdd_device": "SMART disk device"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "hdd_temperature": {
+        "name": "HDD temperature"
+      },
+      "temp1": {
+        "name": "Temperature 1"
+      },
+      "temp2": {
+        "name": "Temperature 2"
+      },
+      "temp3": {
+        "name": "Temperature 3"
+      },
+      "fan1_rpm": {
+        "name": "Fan 1 speed"
+      },
+      "fan2_rpm": {
+        "name": "Fan 2 speed"
+      },
+      "pwm1": {
+        "name": "PWM 1"
+      },
+      "pwm2": {
+        "name": "PWM 2"
+      }
+    },
+    "binary_sensor": {
+      "watchdog": {
+        "name": "Fan watchdog"
+      }
+    },
+    "number": {
+      "target_pwm1": {
+        "name": "Target PWM 1"
+      },
+      "target_pwm2": {
+        "name": "Target PWM 2"
+      },
+      "poll_interval": {
+        "name": "Polling interval"
+      },
+      "smart_interval": {
+        "name": "SMART polling interval"
+      },
+      "curve_min_temp": {
+        "name": "Curve minimum temperature"
+      },
+      "curve_max_temp": {
+        "name": "Curve maximum temperature"
+      },
+      "curve_hysteresis": {
+        "name": "Curve hysteresis"
+      },
+      "curve_min_pwm": {
+        "name": "Curve minimum PWM"
+      },
+      "curve_max_pwm": {
+        "name": "Curve maximum PWM"
+      }
+    },
+    "select": {
+      "control_mode": {
+        "name": "Control mode",
+        "state": {
+          "monitor": "Monitor",
+          "fixed": "Fixed",
+          "curve": "Curve"
+        }
+      }
+    }
+  }
+}

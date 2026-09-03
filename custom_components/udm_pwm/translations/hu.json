@@ -1,0 +1,137 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Ez az UDM Pro már be van állítva."
+    },
+    "error": {
+      "cannot_connect": "Nem sikerült SSH-n csatlakozni az UDM Pro eszközhöz."
+    },
+    "step": {
+      "user": {
+        "title": "UDM Pro ventilátor vezérlés",
+        "description": "SSH kapcsolattal csatlakozik az UDM Pro eszközhöz. Az UDM Pro-ra nem telepit semmit.",
+        "data": {
+          "host": "Hoszt",
+          "username": "Felhasznalónév",
+          "password": "Jelszó",
+          "control_mode": "Vezérlési mód",
+          "pwm1": "Cel PWM 1",
+          "pwm2": "Cel PWM 2",
+          "interval": "Lekérdezesi időköz",
+          "smart_interval": "SMART lekérdezési időköz",
+          "curve_min_temp": "Görbe minimum hőmérséklet",
+          "curve_max_temp": "Görbe maximum hőmérséklet",
+          "curve_hysteresis": "Görbe hiszterézis",
+          "curve_min_pwm": "Görbe minimum PWM",
+          "curve_max_pwm": "Görbe maximum PWM",
+          "pwm1_path": "PWM 1 sysfs útvonal",
+          "pwm2_path": "PWM 2 sysfs útvonal",
+          "fan1_rpm_path": "Ventilátor 1 RPM sysfs útvonal",
+          "fan2_rpm_path": "Ventilátor 2 RPM sysfs útvonal",
+          "temp1_path": "Hőmérséklet 1 sysfs útvonal",
+          "temp2_path": "Hőmérséklet 2 sysfs útvonal",
+          "temp3_path": "Hőmérséklet 3 sysfs útvonal",
+          "hdd_device": "SMART lemez eszköz"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "UDM Pro ventilátor vezérlés beállítasok",
+        "data": {
+          "pwm1": "Cél PWM 1",
+          "pwm2": "Cél PWM 2",
+          "interval": "Lekérdezesi időköz",
+          "smart_interval": "SMART lekérdezési időköz",
+          "curve_min_temp": "Görbe minimum hőmérséklet",
+          "curve_max_temp": "Görbe maximum hőmérséklet",
+          "curve_hysteresis": "Görbe hiszterézis",
+          "curve_min_pwm": "Görbe minimum PWM",
+          "curve_max_pwm": "Görbe maximum PWM",
+          "pwm1_path": "PWM 1 sysfs útvonal",
+          "pwm2_path": "PWM 2 sysfs útvonal",
+          "fan1_rpm_path": "Ventilátor 1 RPM sysfs útvonal",
+          "fan2_rpm_path": "Ventilátor 2 RPM sysfs útvonal",
+          "temp1_path": "Hőmérséklet 1 sysfs útvonal",
+          "temp2_path": "Hőmérséklet 2 sysfs útvonal",
+          "temp3_path": "Hőmérséklet 3 sysfs útvonal",
+          "hdd_device": "SMART lemez eszköz"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "hdd_temperature": {
+        "name": "HDD hőmérséklet"
+      },
+      "temp1": {
+        "name": "Hőmérséklet 1"
+      },
+      "temp2": {
+        "name": "Hőmérséklet 2"
+      },
+      "temp3": {
+        "name": "Hőmérséklet 3"
+      },
+      "fan1_rpm": {
+        "name": "Ventilátor 1 fordulat"
+      },
+      "fan2_rpm": {
+        "name": "Ventilátor 2 fordulat"
+      },
+      "pwm1": {
+        "name": "PWM 1"
+      },
+      "pwm2": {
+        "name": "PWM 2"
+      }
+    },
+    "binary_sensor": {
+      "watchdog": {
+        "name": "Ventilátor watchdog"
+      }
+    },
+    "number": {
+      "target_pwm1": {
+        "name": "Cél PWM 1"
+      },
+      "target_pwm2": {
+        "name": "Cél PWM 2"
+      },
+      "poll_interval": {
+        "name": "Lekérdezési időköz"
+      },
+      "smart_interval": {
+        "name": "SMART lekérdezési időköz"
+      },
+      "curve_min_temp": {
+        "name": "Görbe minimum hőmérséklet"
+      },
+      "curve_max_temp": {
+        "name": "Görbe maximum hőmérséklet"
+      },
+      "curve_hysteresis": {
+        "name": "Görbe hiszterézis"
+      },
+      "curve_min_pwm": {
+        "name": "Görbe minimum PWM"
+      },
+      "curve_max_pwm": {
+        "name": "Görbe maximum PWM"
+      }
+    },
+    "select": {
+      "control_mode": {
+        "name": "Vezérlési mód",
+        "state": {
+          "monitor": "Monitorozás",
+          "fixed": "Fix",
+          "curve": "Görbe"
+        }
+      }
+    }
+  }
+}
