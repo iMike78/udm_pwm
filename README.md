@@ -144,4 +144,4 @@ The first version uses Paramiko's automatic host-key acceptance. For public use,
 
 ## Development disclosure
 
-This integration was initially drafted with assistance from OpenAI Codex and should be reviewed and tested on real hardware before public release.
+This integration was developed with assistance from OpenAI Codex and validated on a UDM-Pro before release.
