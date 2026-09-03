@@ -140,13 +140,6 @@ This integration needs SSH access that can read and write the UDM Pro fan sysfs 
 
 The first version uses Paramiko's automatic host-key acceptance. For public use, prefer a dedicated local-only UDM Pro account or a constrained environment where SSH access is trusted.
 
-## Publishing checklist
-
-- Publish the repository as `https://github.com/iMike78/udm_pwm`.
-- Replace the placeholder `brand/icon.png` before submitting to the HACS default repository.
-- Create a GitHub release for `0.1.0`.
-- Test install through HACS as a custom repository before announcing.
-
 ## Development disclosure
 
 This integration was initially drafted with assistance from OpenAI Codex and should be reviewed and tested on real hardware before public release.
