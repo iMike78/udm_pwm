@@ -333,9 +333,10 @@ class UdmProFanControlClient:
         target = self._curve_pwm(hottest)
         if (
             self._last_curve_pwm is not None
-            and self._last_curve_temperature is not None
             and target < self._last_curve_pwm
-            and hottest > self._last_curve_temperature - self.settings.curve_hysteresis
+            and hottest
+            > self._temperature_for_pwm(self._last_curve_pwm)
+            - self.settings.curve_hysteresis
         ):
             target = self._last_curve_pwm
 
@@ -356,3 +357,17 @@ class UdmProFanControlClient:
 
         ratio = (temperature - min_temp) / (max_temp - min_temp)
         return round(min_pwm + ratio * (max_pwm - min_pwm))
+
+    def _temperature_for_pwm(self, pwm: int) -> float:
+        min_temp = self.settings.curve_min_temp
+        max_temp = max(self.settings.curve_max_temp, min_temp + 1)
+        min_pwm = self.settings.curve_min_pwm
+        max_pwm = max(self.settings.curve_max_pwm, min_pwm)
+
+        if pwm <= min_pwm:
+            return float(min_temp)
+        if pwm >= max_pwm:
+            return float(max_temp)
+
+        ratio = (pwm - min_pwm) / (max_pwm - min_pwm)
+        return min_temp + ratio * (max_temp - min_temp)
