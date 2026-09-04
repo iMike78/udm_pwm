@@ -22,8 +22,10 @@
           "curve_min_temp": "Görbe minimum hőmérséklet",
           "curve_max_temp": "Görbe maximum hőmérséklet",
           "curve_hysteresis": "Görbe hiszterézis",
-          "curve_min_pwm": "Görbe minimum PWM",
-          "curve_max_pwm": "Görbe maximum PWM",
+          "curve_min_pwm": "PWM 1 görbe minimum",
+          "curve_max_pwm": "PWM 1 görbe maximum",
+          "curve_pwm2_min_pwm": "PWM 2 görbe minimum",
+          "curve_pwm2_max_pwm": "PWM 2 görbe maximum",
           "pwm1_path": "PWM 1 sysfs útvonal",
           "pwm2_path": "PWM 2 sysfs útvonal",
           "fan1_rpm_path": "Ventilátor 1 RPM sysfs útvonal",
@@ -48,8 +50,10 @@
           "curve_min_temp": "Görbe minimum hőmérséklet",
           "curve_max_temp": "Görbe maximum hőmérséklet",
           "curve_hysteresis": "Görbe hiszterézis",
-          "curve_min_pwm": "Görbe minimum PWM",
-          "curve_max_pwm": "Görbe maximum PWM",
+          "curve_min_pwm": "PWM 1 görbe minimum",
+          "curve_max_pwm": "PWM 1 görbe maximum",
+          "curve_pwm2_min_pwm": "PWM 2 görbe minimum",
+          "curve_pwm2_max_pwm": "PWM 2 görbe maximum",
           "pwm1_path": "PWM 1 sysfs útvonal",
           "pwm2_path": "PWM 2 sysfs útvonal",
           "fan1_rpm_path": "Ventilátor 1 RPM sysfs útvonal",
@@ -117,10 +121,16 @@
         "name": "Görbe hiszterézis"
       },
       "curve_min_pwm": {
-        "name": "Görbe minimum PWM"
+        "name": "PWM 1 görbe minimum"
       },
       "curve_max_pwm": {
-        "name": "Görbe maximum PWM"
+        "name": "PWM 1 görbe maximum"
+      },
+      "curve_pwm2_min_pwm": {
+        "name": "PWM 2 görbe minimum"
+      },
+      "curve_pwm2_max_pwm": {
+        "name": "PWM 2 görbe maximum"
       }
     },
     "select": {

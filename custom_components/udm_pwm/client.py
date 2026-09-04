@@ -19,6 +19,8 @@ from .const import (
     CONF_CURVE_HYSTERESIS,
     CONF_CURVE_MIN_PWM,
     CONF_CURVE_MIN_TEMP,
+    CONF_CURVE_PWM2_MAX_PWM,
+    CONF_CURVE_PWM2_MIN_PWM,
     CONF_FAN1_RPM_PATH,
     CONF_FAN2_RPM_PATH,
     CONF_HDD_DEVICE,
@@ -40,6 +42,8 @@ from .const import (
     DEFAULT_CURVE_HYSTERESIS,
     DEFAULT_CURVE_MIN_PWM,
     DEFAULT_CURVE_MIN_TEMP,
+    DEFAULT_CURVE_PWM2_MAX_PWM,
+    DEFAULT_CURVE_PWM2_MIN_PWM,
     DEFAULT_FAN1_RPM_PATH,
     DEFAULT_FAN2_RPM_PATH,
     DEFAULT_HDD_DEVICE,
@@ -79,6 +83,8 @@ class UdmProFanControlSettings:
     curve_hysteresis: int
     curve_min_pwm: int
     curve_max_pwm: int
+    curve_pwm2_min_pwm: int
+    curve_pwm2_max_pwm: int
     pwm1_path: str
     pwm2_path: str
     fan1_rpm_path: str
@@ -117,6 +123,12 @@ class UdmProFanControlSettings:
             ),
             curve_min_pwm=int(merged.get(CONF_CURVE_MIN_PWM, DEFAULT_CURVE_MIN_PWM)),
             curve_max_pwm=int(merged.get(CONF_CURVE_MAX_PWM, DEFAULT_CURVE_MAX_PWM)),
+            curve_pwm2_min_pwm=int(
+                merged.get(CONF_CURVE_PWM2_MIN_PWM, DEFAULT_CURVE_PWM2_MIN_PWM)
+            ),
+            curve_pwm2_max_pwm=int(
+                merged.get(CONF_CURVE_PWM2_MAX_PWM, DEFAULT_CURVE_PWM2_MAX_PWM)
+            ),
             pwm1_path=merged.get(CONF_PWM1_PATH, DEFAULT_PWM1_PATH),
             pwm2_path=merged.get(CONF_PWM2_PATH, DEFAULT_PWM2_PATH),
             fan1_rpm_path=merged.get(CONF_FAN1_RPM_PATH, DEFAULT_FAN1_RPM_PATH),
@@ -158,8 +170,8 @@ class UdmProFanControlClient:
         self.settings = settings
         self._cached_hdd_temperature: int | None = None
         self._last_smart_read = 0.0
-        self._last_curve_temperature: int | None = None
-        self._last_curve_pwm: int | None = None
+        self._last_curve_pwm1: int | None = None
+        self._last_curve_pwm2: int | None = None
 
     def update_settings(self, settings: UdmProFanControlSettings) -> None:
         """Update settings used by the client."""
@@ -187,11 +199,11 @@ class UdmProFanControlClient:
                 if pwm1 != target_pwm1:
                     _LOGGER.info("Updating PWM1 from %s to %s", pwm1, target_pwm1)
                     self._write_int(client, self.settings.pwm1_path, target_pwm1)
-                    pwm1 = target_pwm1
+                    pwm1 = self._read_int(client, self.settings.pwm1_path)
                 if pwm2 != target_pwm2:
                     _LOGGER.info("Updating PWM2 from %s to %s", pwm2, target_pwm2)
                     self._write_int(client, self.settings.pwm2_path, target_pwm2)
-                    pwm2 = target_pwm2
+                    pwm2 = self._read_int(client, self.settings.pwm2_path)
                 watchdog_ok = pwm1 == target_pwm1 and pwm2 == target_pwm2
 
             return UdmProStatus(
@@ -321,34 +333,58 @@ class UdmProFanControlClient:
         if self.settings.control_mode != "curve":
             return self.settings.pwm1, self.settings.pwm2
 
-        temperatures = [
+        hwmon_temperatures = [
             value
-            for value in (hdd_temperature, temp1, temp2, temp3)
+            for value in (temp1, temp2, temp3)
             if value is not None
         ]
-        if not temperatures:
-            return self.settings.curve_max_pwm, self.settings.curve_max_pwm
+        target_pwm1 = self._curve_target_with_hysteresis(
+            hdd_temperature,
+            self._last_curve_pwm1,
+            self.settings.curve_min_pwm,
+            self.settings.curve_max_pwm,
+        )
+        target_pwm2 = self._curve_target_with_hysteresis(
+            max(hwmon_temperatures) if hwmon_temperatures else None,
+            self._last_curve_pwm2,
+            self.settings.curve_pwm2_min_pwm,
+            self.settings.curve_pwm2_max_pwm,
+        )
 
-        hottest = max(temperatures)
-        target = self._curve_pwm(hottest)
+        self._last_curve_pwm1 = target_pwm1
+        self._last_curve_pwm2 = target_pwm2
+        return target_pwm1, target_pwm2
+
+    def _curve_target_with_hysteresis(
+        self,
+        temperature: int | None,
+        last_pwm: int | None,
+        min_pwm: int,
+        max_pwm: int,
+    ) -> int:
+        max_pwm = max(max_pwm, min_pwm)
+        if temperature is None:
+            return max_pwm
+
+        target = self._curve_pwm(temperature, min_pwm, max_pwm)
+        clamped_last_pwm = (
+            None if last_pwm is None else min(max(last_pwm, min_pwm), max_pwm)
+        )
         if (
-            self._last_curve_pwm is not None
-            and target < self._last_curve_pwm
-            and hottest
-            > self._temperature_for_pwm(self._last_curve_pwm)
+            clamped_last_pwm is not None
+            and target < clamped_last_pwm
+            and temperature
+            > self._temperature_for_pwm(clamped_last_pwm, min_pwm, max_pwm)
             - self.settings.curve_hysteresis
         ):
-            target = self._last_curve_pwm
+            return clamped_last_pwm
 
-        self._last_curve_temperature = hottest
-        self._last_curve_pwm = target
-        return target, target
+        return target
 
-    def _curve_pwm(self, temperature: int) -> int:
+    def _curve_pwm(self, temperature: int, min_pwm: int, max_pwm: int) -> int:
         min_temp = self.settings.curve_min_temp
         max_temp = max(self.settings.curve_max_temp, min_temp + 1)
-        min_pwm = self.settings.curve_min_pwm
-        max_pwm = max(self.settings.curve_max_pwm, min_pwm)
+        max_pwm = max(max_pwm, min_pwm)
 
         if temperature <= min_temp:
             return min_pwm
@@ -358,11 +394,10 @@ class UdmProFanControlClient:
         ratio = (temperature - min_temp) / (max_temp - min_temp)
         return round(min_pwm + ratio * (max_pwm - min_pwm))
 
-    def _temperature_for_pwm(self, pwm: int) -> float:
+    def _temperature_for_pwm(self, pwm: int, min_pwm: int, max_pwm: int) -> float:
         min_temp = self.settings.curve_min_temp
         max_temp = max(self.settings.curve_max_temp, min_temp + 1)
-        min_pwm = self.settings.curve_min_pwm
-        max_pwm = max(self.settings.curve_max_pwm, min_pwm)
+        max_pwm = max(max_pwm, min_pwm)
 
         if pwm <= min_pwm:
             return float(min_temp)

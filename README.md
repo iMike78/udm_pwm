@@ -16,11 +16,13 @@ The integration supports three control modes:
 
 - `monitor`: read telemetry only and let the UniFi device manage its own fans.
 - `fixed`: hold explicit PWM values, useful for quickly cooling the system without fan curve hysteresis lowering the speed again.
-- `curve`: adjust PWM from a configurable fan curve, useful when the device is installed in a well-ventilated place and does not need the same fan speed as a warmer cabinet or rack. The curve uses hysteresis when lowering fan speed, so it reacts quickly to heat but does not immediately drop back on small temperature changes.
+- `curve`: adjust PWM from configurable fan curves, useful when the device is installed in a well-ventilated place and does not need the same fan speed as a warmer cabinet or rack. PWM 1 is controlled from the HDD SMART temperature, while PWM 2 is controlled from the highest of the three configured hwmon temperature sensors. The curves use hysteresis when lowering fan speed, so they react quickly to heat but do not immediately drop back on small temperature changes.
+
+The exact physical meaning of the three non-HDD hwmon temperature sensors is not currently documented here and may vary by UDM model or firmware version.
 
 ## Features
 
-- Enforces target UDM Pro `pwm1` and `pwm2` values after reboots or firmware resets.
+- Enforces target UDM Pro `pwm1` and `pwm2` values after reboots or firmware resets, with read-back verification after writes.
 - Exposes HDD SMART temperature, hwmon temperatures, PWM state, fan RPM and watchdog status as Home Assistant entities.
 - Adds writable `number` entities for PWM targets and polling interval.
 - Uses SSH from Home Assistant; nothing is installed on the UDM Pro.
@@ -44,8 +46,10 @@ The integration supports three control modes:
 - `number.udm_pro_curve_minimum_temperature`
 - `number.udm_pro_curve_maximum_temperature`
 - `number.udm_pro_curve_hysteresis`
-- `number.udm_pro_curve_minimum_pwm`
-- `number.udm_pro_curve_maximum_pwm`
+- `number.udm_pro_pwm_1_curve_minimum`
+- `number.udm_pro_pwm_1_curve_maximum`
+- `number.udm_pro_pwm_2_curve_minimum`
+- `number.udm_pro_pwm_2_curve_maximum`
 - `select.udm_pro_control_mode`
 
 ## Installation with HACS
@@ -72,7 +76,8 @@ The setup flow asks for:
 - Target PWM values
 - Polling interval
 - SMART polling interval
-- Fan curve temperature and PWM limits
+- Fan curve temperature limits
+- Separate fan curve PWM limits for PWM 1 and PWM 2
 - Fan curve hysteresis
 - Optional sysfs paths and SMART device path
 
@@ -86,7 +91,8 @@ Default values:
 - SMART polling interval: `300` seconds
 - Curve temperature range: `35` to `45 °C`
 - Curve hysteresis: `2 °C`
-- Curve PWM range: `120` to `200`
+- Curve PWM 1 range: `120` to `200`
+- Curve PWM 2 range: `120` to `200`
 - PWM paths: `/sys/class/hwmon/hwmon0/device/pwm1`, `/sys/class/hwmon/hwmon0/device/pwm2`
 - Fan RPM paths: `/sys/class/hwmon/hwmon0/device/fan1_input`, `/sys/class/hwmon/hwmon0/device/fan2_input`
 - Temperature paths: `/sys/class/hwmon/hwmon0/device/temp1_input`, `/sys/class/hwmon/hwmon0/device/temp2_input`, `/sys/class/hwmon/hwmon0/device/temp3_input`

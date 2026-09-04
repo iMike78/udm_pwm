@@ -17,6 +17,8 @@ from .const import (
     CONF_CURVE_HYSTERESIS,
     CONF_CURVE_MIN_PWM,
     CONF_CURVE_MIN_TEMP,
+    CONF_CURVE_PWM2_MAX_PWM,
+    CONF_CURVE_PWM2_MIN_PWM,
     CONF_INTERVAL,
     CONF_PWM1,
     CONF_PWM2,
@@ -26,6 +28,8 @@ from .const import (
     DEFAULT_CURVE_HYSTERESIS,
     DEFAULT_CURVE_MIN_PWM,
     DEFAULT_CURVE_MIN_TEMP,
+    DEFAULT_CURVE_PWM2_MAX_PWM,
+    DEFAULT_CURVE_PWM2_MIN_PWM,
     DEFAULT_INTERVAL,
     DEFAULT_PWM1,
     DEFAULT_PWM2,
@@ -131,6 +135,22 @@ NUMBERS: tuple[UdmProNumberEntityDescription, ...] = (
         native_max_value=MAX_PWM,
         native_step=1,
     ),
+    UdmProNumberEntityDescription(
+        key="curve_pwm2_min_pwm",
+        translation_key="curve_pwm2_min_pwm",
+        option_key=CONF_CURVE_PWM2_MIN_PWM,
+        native_min_value=MIN_PWM,
+        native_max_value=MAX_PWM,
+        native_step=1,
+    ),
+    UdmProNumberEntityDescription(
+        key="curve_pwm2_max_pwm",
+        translation_key="curve_pwm2_max_pwm",
+        option_key=CONF_CURVE_PWM2_MAX_PWM,
+        native_min_value=MIN_PWM,
+        native_max_value=MAX_PWM,
+        native_step=1,
+    ),
 )
 
 DEFAULT_NUMBER_VALUES = {
@@ -143,6 +163,8 @@ DEFAULT_NUMBER_VALUES = {
     CONF_CURVE_HYSTERESIS: DEFAULT_CURVE_HYSTERESIS,
     CONF_CURVE_MIN_PWM: DEFAULT_CURVE_MIN_PWM,
     CONF_CURVE_MAX_PWM: DEFAULT_CURVE_MAX_PWM,
+    CONF_CURVE_PWM2_MIN_PWM: DEFAULT_CURVE_PWM2_MIN_PWM,
+    CONF_CURVE_PWM2_MAX_PWM: DEFAULT_CURVE_PWM2_MAX_PWM,
 }
 
 

@@ -24,6 +24,8 @@ from .const import (
     CONF_CURVE_HYSTERESIS,
     CONF_CURVE_MIN_PWM,
     CONF_CURVE_MIN_TEMP,
+    CONF_CURVE_PWM2_MAX_PWM,
+    CONF_CURVE_PWM2_MIN_PWM,
     CONF_PWM1,
     CONF_PWM1_PATH,
     CONF_PWM2,
@@ -39,6 +41,8 @@ from .const import (
     DEFAULT_CURVE_HYSTERESIS,
     DEFAULT_CURVE_MIN_PWM,
     DEFAULT_CURVE_MIN_TEMP,
+    DEFAULT_CURVE_PWM2_MAX_PWM,
+    DEFAULT_CURVE_PWM2_MIN_PWM,
     DEFAULT_FAN1_RPM_PATH,
     DEFAULT_FAN2_RPM_PATH,
     DEFAULT_HDD_DEVICE,
@@ -103,6 +107,12 @@ class UdmProFanControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_CURVE_HYSTERESIS: user_input[CONF_CURVE_HYSTERESIS],
                         CONF_CURVE_MIN_PWM: user_input[CONF_CURVE_MIN_PWM],
                         CONF_CURVE_MAX_PWM: user_input[CONF_CURVE_MAX_PWM],
+                        CONF_CURVE_PWM2_MIN_PWM: user_input[
+                            CONF_CURVE_PWM2_MIN_PWM
+                        ],
+                        CONF_CURVE_PWM2_MAX_PWM: user_input[
+                            CONF_CURVE_PWM2_MAX_PWM
+                        ],
                     },
                 )
 
@@ -273,6 +283,18 @@ def _shared_fields(values: dict[str, Any]) -> dict[Any, Any]:
         vol.Required(
             CONF_CURVE_MAX_PWM,
             default=values.get(CONF_CURVE_MAX_PWM, DEFAULT_CURVE_MAX_PWM),
+        ): _pwm_selector(),
+        vol.Required(
+            CONF_CURVE_PWM2_MIN_PWM,
+            default=values.get(
+                CONF_CURVE_PWM2_MIN_PWM, DEFAULT_CURVE_PWM2_MIN_PWM
+            ),
+        ): _pwm_selector(),
+        vol.Required(
+            CONF_CURVE_PWM2_MAX_PWM,
+            default=values.get(
+                CONF_CURVE_PWM2_MAX_PWM, DEFAULT_CURVE_PWM2_MAX_PWM
+            ),
         ): _pwm_selector(),
     }
 
