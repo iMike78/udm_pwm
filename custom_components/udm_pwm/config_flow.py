@@ -9,8 +9,13 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import selector
+from paramiko.ssh_exception import AuthenticationException, SSHException
 
-from .client import UdmProFanControlClient, UdmProFanControlSettings
+from .client import (
+    UdmProFanControlClient,
+    UdmProFanControlError,
+    UdmProFanControlSettings,
+)
 from .const import (
     CONF_FAN1_RPM_PATH,
     CONF_FAN2_RPM_PATH,
@@ -122,6 +127,57 @@ class UdmProFanControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
+    async def async_step_reauth(
+        self, entry_data: dict[str, Any]
+    ) -> config_entries.ConfigFlowResult:
+        """Handle reauthentication."""
+
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Confirm reauthentication with a new SSH password."""
+
+        errors: dict[str, str] = {}
+        reauth_entry = self._get_reauth_entry()
+
+        if user_input is not None:
+            updated_data = {
+                **reauth_entry.data,
+                CONF_PASSWORD: user_input[CONF_PASSWORD],
+            }
+            settings = UdmProFanControlSettings.from_entry_data(
+                updated_data, reauth_entry.options
+            )
+            client = UdmProFanControlClient(settings)
+
+            try:
+                await self.hass.async_add_executor_job(client.read_status, False)
+            except AuthenticationException:
+                errors["base"] = "invalid_auth"
+            except (OSError, SSHException, UdmProFanControlError):
+                errors["base"] = "cannot_connect"
+            else:
+                return self.async_update_reload_and_abort(
+                    reauth_entry,
+                    data_updates={CONF_PASSWORD: user_input[CONF_PASSWORD]},
+                )
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_PASSWORD): selector.TextSelector(
+                        selector.TextSelectorConfig(
+                            type=selector.TextSelectorType.PASSWORD
+                        )
+                    )
+                }
+            ),
+            errors=errors,
+        )
+
     @staticmethod
     @callback
     def async_get_options_flow(
@@ -129,16 +185,11 @@ class UdmProFanControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> UdmProFanControlOptionsFlow:
         """Create the options flow."""
 
-        return UdmProFanControlOptionsFlow(config_entry)
+        return UdmProFanControlOptionsFlow()
 
 
 class UdmProFanControlOptionsFlow(config_entries.OptionsFlow):
     """Handle options for UDM Pro Fan Control."""
-
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        """Initialize options flow."""
-
-        self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
