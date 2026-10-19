@@ -6,9 +6,9 @@ from datetime import timedelta
 import logging
 
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from paramiko.ssh_exception import AuthenticationException
+from paramiko.ssh_exception import AuthenticationException, SSHException
 
 from .client import (
     UdmProFanControlClient,
@@ -44,10 +44,8 @@ class UdmProFanControlCoordinator(DataUpdateCoordinator[UdmProStatus]):
             return await self.hass.async_add_executor_job(self.client.read_status, True)
         except AuthenticationException as err:
             raise ConfigEntryAuthFailed("UDM Pro SSH authentication failed") from err
-        except (OSError, UdmProFanControlError) as err:
+        except (OSError, SSHException, UdmProFanControlError) as err:
             raise UpdateFailed(str(err)) from err
-        except Exception as err:  # noqa: BLE001 - surface unexpected device errors.
-            raise HomeAssistantError(str(err)) from err
 
     def update_settings(self, settings: UdmProFanControlSettings) -> None:
         """Update client settings and polling interval."""
