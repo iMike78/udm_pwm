@@ -4,7 +4,8 @@
       "already_configured": "This UDM Pro is already configured."
     },
     "error": {
-      "cannot_connect": "Could not connect to the UDM Pro over SSH."
+      "cannot_connect": "Could not connect to the UDM Pro over SSH.",
+      "invalid_auth": "Invalid SSH authentication. Check the password and try again."
     },
     "step": {
       "user": {
@@ -34,6 +35,13 @@
           "temp2_path": "Temperature 2 sysfs path",
           "temp3_path": "Temperature 3 sysfs path",
           "hdd_device": "SMART disk device"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate UDM Pro Fan Control",
+        "description": "Enter the new SSH password for the UDM Pro.",
+        "data": {
+          "password": "Password"
         }
       }
     }
